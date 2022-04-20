@@ -16,15 +16,12 @@ import (
 
 func main() {
 
-	timeframe := setTimer()
+	timeframe := setTimer() * 60 //*60 hence we calculate in seconds - timeframe gets time in minutes
+	pause := timeframe / 5
 
-	//duration := time.Duration(0) * time.Second
+	tik := time.NewTicker(1 * time.Millisecond)
 
-	//tik := time.NewTicker(duration + 1*time.Millisecond)
-	tik := time.NewTicker(1 * time.Second)
-
-	//bar := fmt.Sprintf("\x0c")
-
+	// i is our controll variable which represents the seconds elapsed
 	i := 0
 
 	// startTime := fmt.Sprintf("Start: %s", time.Now())
@@ -35,10 +32,6 @@ func main() {
 
 	for range tik.C {
 		i++
-		//duration += time.Second
-
-		//fmt.Println(i, ": ", time.Now())
-		//fmt.Println(i, "##", <-tik.C)
 
 		fmt.Printf("%s", "#")
 		if i%5 == 0 {
@@ -48,7 +41,7 @@ func main() {
 			fmt.Printf("%vs: ", i)
 		}
 
-		if i >= timeframe*60 && phaseEnd == 0 {
+		if i >= timeframe && phaseEnd == 0 {
 			phaseEnd += 1
 			//tik.Stop()
 			fmt.Println("xx", phaseEnd)
@@ -58,7 +51,7 @@ func main() {
 			sound.PlaySound() // play sound at the end
 			helpers.Logger(startTime, endTime)
 			//break
-		} else if i >= (timeframe+1)*60 {
+		} else if i >= (timeframe + pause) {
 			tik.Stop()
 			fmt.Println("")
 			fmt.Println("startBREAK", startTime)

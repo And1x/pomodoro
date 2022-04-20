@@ -11,15 +11,18 @@ import (
 	"pomodoro/helpers"
 	"pomodoro/sound"
 	"strconv"
+	"strings"
 	"time"
 )
 
 func main() {
 
+	//setFrames := createFrames("*", 60)
+
 	timeframe := setTimer() * 60 //*60 hence we calculate in seconds - timeframe gets time in minutes
 	pause := timeframe / 5
 
-	tik := time.NewTicker(1 * time.Millisecond)
+	tik := time.NewTicker(50 * time.Millisecond)
 
 	// i is our controll variable which represents the seconds elapsed
 	i := 0
@@ -30,6 +33,9 @@ func main() {
 	// phaseEnd is used to control how often the first if statement should be used
 	var phaseEnd int
 
+	// clear screen and jump at start of screen
+	fmt.Print("\033[H\033[2J")
+
 	for range tik.C {
 		i++
 
@@ -38,7 +44,8 @@ func main() {
 
 			fmt.Printf("\x1b[2J") // clear whole screen
 			fmt.Print("\033[H")   // jump at the start of the screen
-			fmt.Printf("%vs: ", i)
+			//fmt.Printf("%vs: ", i)
+			fmt.Printf("%dm: ", i/60)
 		}
 
 		if i >= timeframe && phaseEnd == 0 {
@@ -58,7 +65,7 @@ func main() {
 			endTime := time.Now()
 			fmt.Println("EndeBREAK ", endTime)
 			sound.PlaySound() // play sound at the end
-			helpers.Logger(startTime, endTime)
+			// helpers.Logger(startTime, endTime)
 			break
 		}
 	}
@@ -74,4 +81,14 @@ func setTimer() (timeframe int) {
 		log.Println(err)
 	}
 	return
+}
+
+func createFrames(symbol string, length int) []string {
+
+	animationFrames := []string{}
+	for i := 0; i <= length; i++ {
+		step := strings.Repeat("", i)
+		animationFrames = append(animationFrames, step)
+	}
+	return animationFrames
 }

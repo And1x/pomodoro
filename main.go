@@ -27,7 +27,7 @@ func main() {
 
 	tik := time.NewTicker(1 * time.Second)
 
-	// i is our controll variable which represents the seconds elapsed, j is the animation counter
+	// i is our control variable which represents the seconds elapsed, j is the animation counter
 	i, j := 0, 0
 
 	// startTime := fmt.Sprintf("Start: %s", time.Now())
@@ -76,38 +76,7 @@ timeLoop:
 			fmt.Printf("\033[39m%v\n\033[31m%d\n\n", setFrames[j], i)
 
 		}
-		/*
-			fmt.Printf("%s", "#")
-			if i%5 == 0 {
-
-				fmt.Printf("\x1b[2J") // clear whole screen
-				fmt.Print("\033[H")   // jump at the start of the screen
-				//fmt.Printf("%vs: ", i)
-				fmt.Printf("%dm: ", i/60)
-			}
-
-			if i >= timeframe && phaseEnd == 0 {
-				phaseEnd += 1
-				//tik.Stop()
-				fmt.Println("xx", phaseEnd)
-				fmt.Println("start", startTime)
-				endTime := time.Now()
-				fmt.Println("Ende ", endTime)
-				sound.PlaySound() // play sound at the end
-				helpers.Logger(startTime, endTime)
-				//break
-			} else if i >= (timeframe + pause) {
-				tik.Stop()
-				fmt.Println("")
-				fmt.Println("startBREAK", startTime)
-				endTime := time.Now()
-				fmt.Println("EndeBREAK ", endTime)
-				sound.PlaySound() // play sound at the end
-				// helpers.Logger(startTime, endTime)
-				break
-			}*/
 	}
-
 }
 
 // setTimer gets the timeframe as cli- arg eg. // eg. "go run main.go 15"

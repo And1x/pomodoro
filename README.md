@@ -25,6 +25,9 @@
   - see: /home/and1/Desktop/gopro/golearn/ioPackage/io.go
   - --
 ---
+## Tipps while developing:
+use branches for new features [BRANCHES:](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell)
+
 ---
 # How to use: 
 Pause/Resume in the cli: ctrl + s / ctrl + q

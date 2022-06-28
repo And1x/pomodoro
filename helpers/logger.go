@@ -90,6 +90,7 @@ func Logger(start, end time.Time, timeframe int, task string) {
 		_, _ = wholeLog2.WriteString(val + "\n")
 	}
 
+	_, err = f.Write(wholeLog2.Bytes())
 	// write into the log file
 	if err != nil {
 		log.Fatal(err)

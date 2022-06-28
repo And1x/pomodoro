@@ -1,18 +1,12 @@
-Runs: 4 
-Total time: 100 min
+Runs: 5 
+Total time: 125 min
 ══════════════════════════════════════════════════════════════
 ══════════════════════════════════════════════════════════════
-8-06-2022 | 21:51:11  ===>  21:51:12 | Passed: 0.03 | Set: 25
-Task: Coding - working on a new project - pt3/pt156 
-══════════════════════════════════════════════════════════════
-28-06-2022 | 21:51:26  ===>  21:51:27 | Passed: 0.03 | Set: 25
-Task: Coding - working on a new project - pt3/pt156ddddddddd 
-══════════════════════════════════════════════════════════════
-28-06-2022 | 21:51:37  ===>  21:51:39 | Passed: 0.03 | Set: 25
+28-06-2022 | 22:10:00  ===>  22:10:02 | Passed: 0.03 | Set: 25
 Task: Coding - working on a new project - 
 pt3/pt156dddddddddffffffffffff 
 ══════════════════════════════════════════════════════════════
-28-06-2022 | 21:52:11  ===>  21:52:12 | Passed: 0.03 | Set: 25
-Task: Coding - working on a new project - pt3 /pt156dddd 
-dddddffffffffffff 
+28-06-2022 | 22:10:09  ===>  22:10:11 | Passed: 0.03 | Set: 25
+Task: Coding - working on a new project - 
+pt3/pt156dddddddddffffffffffff 
 ══════════════════════════════════════════════════════════════

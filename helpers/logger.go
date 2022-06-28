@@ -5,6 +5,7 @@
 package helpers
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -12,11 +13,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode"
 )
 
 // logger writes start and end of a pomodoro phase in file logPhases
-func Logger(start, end time.Time) {
+func Logger(start, end time.Time, timeframe int, task string) {
 
 	f, err := os.OpenFile("logPhases.txt", os.O_RDWR, 0666)
 	if err != nil {
@@ -25,28 +25,33 @@ func Logger(start, end time.Time) {
 	defer f.Close()
 
 	//##########################################
-	// read the file to get the Runs - and add +1 to add it in next turn
-	buffer := make([]byte, 10)
+	// read the file to get the Runs - and add +1 to add current run
+	buffer := make([]byte, 30)
 	n, err := f.Read(buffer)
 	if err != nil {
 		fmt.Println("cant read string bro", err, n)
 	}
-	fmt.Println("BUFFERRR::", string(buffer))
+	//fmt.Println("BUFFERRR::", string(buffer))
+
+	dirtyRunsTotal := strings.Fields(string(buffer))
+
 	// get number of runs from string and add +1
-	runs := strings.TrimPrefix(string(buffer), "Runs: ")
-	runs = trimRuns(runs)
+	runs := dirtyRunsTotal[1]
 	runsInt, err := strconv.Atoi(runs)
 	if err != nil {
 		fmt.Println("cant strconv", err)
 	}
-	runs = strconv.Itoa(runsInt + 1)
-	total, _ := strconv.Atoi(runs)
-	total *= 25
+	runsInt++ // add +1 for current run
+
+	total, _ := strconv.Atoi(dirtyRunsTotal[4])
+	total += timeframe / 60
+
+	statsSep := strings.Repeat("═", 55)
 
 	//##########################################
 	// write the Runs to file
 	f.Seek(0, io.SeekStart)
-	addTotalRuns := "Runs: " + runs + "\nTotal time: " + strconv.Itoa(total) + "\n" + strings.Repeat("_-", 30) + "\n"
+	addTotalRuns := "Runs: " + strconv.Itoa(runsInt) + " \nTotal time: " + strconv.Itoa(total) + " min\n" + statsSep + "\n" + statsSep + "\n" // " \n" whitespace before newline needed so split function works as intended
 	_, err = f.Write([]byte(addTotalRuns))
 	if err != nil {
 		fmt.Println("cannot writeFile 2 runs", err)
@@ -64,22 +69,31 @@ func Logger(start, end time.Time) {
 	} else {
 		length = len(end.String())
 	}
-	sepLine := strings.Repeat("#", length)
+	sepLine := strings.Repeat("═", length) //▞ ═
 
 	// get time difference and write at end of file with separator line
 	difference := end.Sub(start)
-	_, err = f.Write([]byte(start.String() + "\n" + end.String() + "\n" + "Time passed: " + difference.String() + "\n" + sepLine + "\n"))
+
+	// build each line to add into log file
+	wholeLog := []string{
+		start.String(),
+		end.String(),
+		"Time passed: " + difference.String(),
+		"time set: " + strconv.Itoa(timeframe/60),
+		"Task: " + task,
+		sepLine,
+	}
+	// create []byte with newlines
+	var wholeLog2 bytes.Buffer
+	for _, val := range wholeLog {
+		_, _ = wholeLog2.WriteString(val + "\n")
+	}
+
+	// write into the log file
+	//_, err = f.Write([]byte(start.String() + "\n" + end.String() + "\n" + "Time passed: " + difference.String() + "\n" + "Time set: " + strconv.Itoa(timeframe/60) + "\n" + "Task: " + task + "\n" + sepLine + "\n"))
+	_, err = f.Write(wholeLog2.Bytes())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-}
-
-func trimRuns(str string) string {
-	for i, val := range str {
-		if !unicode.IsNumber(val) {
-			return str[:i]
-		}
-	}
-	return str
 }

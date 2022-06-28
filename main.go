@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"pomodoro/helpers"
 	"pomodoro/sound"
@@ -22,10 +21,22 @@ func main() {
 	setFrames := createFrames("█", 60) // 🟩 ⬛ ▀▄ █
 	//fmt.Println(setFrames)
 
-	timeframe := setTimer() * 60 //*60 hence we calculate in seconds - timeframe gets time in minutes
+	// get timeframe and task from user - if empty set default settings
+	var timeframe int
+	usertime, task := getUserSettings()
+	if usertime == "" {
+		timeframe = 25
+	} else {
+		timeframe, _ = strconv.Atoi(usertime)
+	}
+	if task == "" {
+		task = "not specified"
+	}
+	timeframe *= 60 //*60 hence we calculate in seconds - timeframe gets time in minutes
 	pause := timeframe / 5
 
-	tik := time.NewTicker(1 * time.Millisecond)
+	//tik := time.NewTicker(1 * time.Millisecond)
+	tik := time.NewTicker(1 * time.Second)
 
 	// i is our control variable which represents the seconds elapsed, j is the animation counter
 	i, j := 0, 0
@@ -56,7 +67,7 @@ timeLoop:
 			endTime := time.Now()
 			// fmt.Println("Ende ", endTime)
 			sound.PlaySound() // play sound at the end
-			helpers.Logger(startTime, endTime)
+			helpers.Logger(startTime, endTime, timeframe, task)
 
 			fmt.Printf("do you want a break for %dsec? y/n \n", pause)
 			if makeBreak() { // check if user wants a break - if yes continue to tik else stop here
@@ -77,17 +88,14 @@ timeLoop:
 
 		}
 	}
+
 }
 
-// setTimer gets the timeframe as cli- arg eg. // eg. "go run main.go 15"
+// getUserSettings gets the timeframe + task as cli- arg eg. // eg. >$ go run main.go 15 'write stuff'
 // flags without "-" or "--"
-func setTimer() (timeframe int) {
+func getUserSettings() (string, string) {
 	flag.Parse()
-	timeframe, err := strconv.Atoi(flag.Arg(0))
-	if err != nil {
-		log.Println(err)
-	}
-	return
+	return flag.Arg(0), flag.Arg(1)
 }
 
 // createFrames creates the Frames to loop trough to get an animation... Probably unnecessarry - could be improved later on.

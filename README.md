@@ -18,11 +18,10 @@
   - Styling (color...) in UI 
 ### Low Prio:
   - **Frames** probably not needed to create as array
-  - **Logger** - I'm sure it could be done better/more elegant
-  - **Logger** - Use CLI timeframe argument to add to TOTAL TIME instead fixed 25
+  - **Logger** - ~~Use CLI timeframe argument to add to TOTAL TIME instead fixed 25~~
   - --
   - **Logger** - Create Weekly logs -> smaller files; exec: open file -> read File -> Get Runs -> write complete new file or append??
-  - see: /home/and1/Desktop/gopro/golearn/ioPackage/io.go
+  - use an init function in case logPhases.txt does not exists and/ or has no initial values
   - --
 ---
 ## Tipps while developing:

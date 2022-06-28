@@ -11,32 +11,28 @@ import (
 	"os"
 	"pomodoro/helpers"
 	"pomodoro/sound"
-	"strconv"
 	"strings"
 	"time"
 )
 
 func main() {
+	// check if logPhases exists - if not create it
+	if helpers.CreateLogFileIfNotExsiting() {
+		fmt.Println("created new log File")
+	}
 
 	setFrames := createFrames("█", 60) // 🟩 ⬛ ▀▄ █
 	//fmt.Println(setFrames)
 
 	// get timeframe and task from user - if empty set default settings
 	var timeframe int
-	usertime, task := getUserSettings()
-	if usertime == "" {
-		timeframe = 25
-	} else {
-		timeframe, _ = strconv.Atoi(usertime)
-	}
-	if task == "" {
-		task = "not specified"
-	}
+	timeframe, task := getUserSettings()
+
 	timeframe *= 60 //*60 hence we calculate in seconds - timeframe gets time in minutes
 	pause := timeframe / 5
 
-	//tik := time.NewTicker(1 * time.Millisecond)
-	tik := time.NewTicker(1 * time.Second)
+	tik := time.NewTicker(1 * time.Millisecond)
+	//tik := time.NewTicker(1 * time.Second)
 
 	// i is our control variable which represents the seconds elapsed, j is the animation counter
 	i, j := 0, 0
@@ -93,9 +89,12 @@ timeLoop:
 
 // getUserSettings gets the timeframe + task as cli- arg eg. // eg. >$ go run main.go 15 'write stuff'
 // flags without "-" or "--"
-func getUserSettings() (string, string) {
+func getUserSettings() (int, string) {
+
+	d := flag.Int("d", 25, "set the duration of one pomodoro round")
+	t := flag.String("t", "not specified", "set the task you gonna do")
 	flag.Parse()
-	return flag.Arg(0), flag.Arg(1)
+	return *d, *t //flag.Arg(0), flag.Arg(1)
 }
 
 // createFrames creates the Frames to loop trough to get an animation... Probably unnecessarry - could be improved later on.

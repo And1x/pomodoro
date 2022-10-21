@@ -31,8 +31,8 @@ func main() {
 	timeframe *= 60 //*60 hence we calculate in seconds - timeframe gets time in minutes
 	pause := timeframe / 5
 
-	tik := time.NewTicker(1 * time.Millisecond)
-	//tik := time.NewTicker(1 * time.Second)
+	//tik := time.NewTicker(1 * time.Millisecond)
+	tik := time.NewTicker(1 * time.Second)
 
 	// i is our control variable which represents the seconds elapsed, j is the animation counter
 	i, j := 0, 0

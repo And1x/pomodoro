@@ -15,33 +15,43 @@ import (
 	"time"
 )
 
+const taskFile = ".taskList.json" // todo: add weekly name
+
 func main() {
-	// check if logPhases exists - if not create it
-	if helpers.CreateLogFileIfNotExsiting() {
-		fmt.Println("created new log File")
-	}
 
 	setFrames := createFrames("█", 60) // 🟩 ⬛ ▀▄ █
-	//fmt.Println(setFrames)
 
-	// get timeframe and task from user - if empty set default settings
-	var timeframe int
-	timeframe, task := getUserSettings()
+	d := flag.Int("d", 25, "set the duration of one pomodoro round")
+	taskName := flag.String("t", "not specified", "set the task you gonna do")
+	countRuns := flag.Bool("count", false, "Count all runs done this month")
+	flag.Parse()
 
-	timeframe *= 60 //*60 hence we calculate in seconds - timeframe gets time in minutes
+	timeframe := *d * 60 //*60 hence we calculate in seconds - flag gets time in minutes
 	pause := timeframe / 5
 
-	//tik := time.NewTicker(1 * time.Millisecond)
-	tik := time.NewTicker(1 * time.Second)
+	tik := time.NewTicker(1 * time.Millisecond)
+	// tik := time.NewTicker(1 * time.Second)
 
 	// i is our control variable which represents the seconds elapsed, j is the animation counter
 	i, j := 0, 0
 
-	// startTime := fmt.Sprintf("Start: %s", time.Now())
 	startTime := time.Now()
 
 	// phaseEnd is used to control how often the first if statement should be used
 	var phaseEnd int
+
+	taskList := &helpers.TaskList{}
+	if err := taskList.Load(taskFile); err != nil { // todo: instead loading the whole List - just use it when needed and append to file when adding new task
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+
+	// when count flag is provided just show the Runs and exit with success
+	if *countRuns {
+		i := taskList.TotalRuns()
+		fmt.Println(i)
+		os.Exit(0)
+	}
 
 	// clear screen and jump at start of screen
 	fmt.Print("\033[H\033[2J")
@@ -59,11 +69,21 @@ timeLoop:
 			phaseEnd++
 			//## tik.Stop()
 
-			// fmt.Println("start", startTime)
 			endTime := time.Now()
-			// fmt.Println("Ende ", endTime)
-			sound.PlaySound() // play sound at the end
-			helpers.Logger(startTime, endTime, timeframe, task)
+
+			sound.PlaySound()
+
+			// helpers.Logger(startTime, endTime, timeframe, *taskName)
+
+			task := &helpers.Task{
+				Name:       *taskName,
+				Duration:   *d,
+				Date:       startTime.Format("02-01-2006"),
+				StartedAt:  startTime,
+				FinishedAt: endTime,
+			}
+			taskList.Add(task)
+			taskList.Save(taskFile)
 
 			fmt.Printf("do you want a break for %dsec? y/n \n", pause)
 			if makeBreak() { // check if user wants a break - if yes continue to tik else stop here
@@ -84,17 +104,6 @@ timeLoop:
 
 		}
 	}
-
-}
-
-// getUserSettings gets the timeframe + task as cli- arg eg. // eg. >$ go run main.go 15 'write stuff'
-// flags without "-" or "--"
-func getUserSettings() (int, string) {
-
-	d := flag.Int("d", 25, "set the duration of one pomodoro round")
-	t := flag.String("t", "not specified", "set the task you gonna do")
-	flag.Parse()
-	return *d, *t //flag.Arg(0), flag.Arg(1)
 }
 
 // createFrames creates the Frames to loop trough to get an animation... Probably unnecessarry - could be improved later on.

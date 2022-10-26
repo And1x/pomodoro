@@ -43,7 +43,6 @@ func (t *TaskList) Save(w io.Writer) error {
 
 // Load loads the whole TaskList into t (in Memory).
 func (t *TaskList) Load(r io.Reader) error {
-
 	buf, err := io.ReadAll(r)
 	if err != nil {
 		return err
@@ -52,13 +51,7 @@ func (t *TaskList) Load(r io.Reader) error {
 	if len(buf) == 0 {
 		return nil
 	}
-
-	err = json.Unmarshal(buf, t)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return json.Unmarshal(buf, t)
 }
 
 // PrintStats pretty prints a table with Tasks done - possible to show just daily or whole month - default is daily
@@ -90,7 +83,7 @@ func (t *TaskList) PrintStats(dayOrMonth string) {
 			{Text: fmt.Sprint(i)},
 			{Text: green(task.Name)},
 			{Align: simpletable.AlignCenter, Text: blue(fmt.Sprint(task.Duration))},
-			{Text: task.StartedAt.Format("02-01")},
+			{Align: simpletable.AlignCenter, Text: task.StartedAt.Format("02-01")},
 			{Text: task.StartedAt.Format("15:04")},
 			{Text: task.FinishedAt.Format("15:04")},
 		}

@@ -2,35 +2,27 @@ package helpers
 
 import (
 	"encoding/json"
-	"errors"
-	"os"
+	"fmt"
+	"io"
 	"time"
+
+	"github.com/alexeyco/simpletable"
 )
-
-// Task gets added after time is elapsed
-
-// create Tasks and marshal them in JSON- no need to read from file
-// every JSON entry is a Run -> to calc Total runs just loop trough JSON elements
-// same could be done with TOTAL-Time
 
 type Task struct {
 	Name       string
 	Duration   int
-	Date       string // Needed??
 	StartedAt  time.Time
 	FinishedAt time.Time
 }
 
 type TaskList []Task
 
-// todo: use allot of single Params??
-// func (t *Tasks) Add(name string, duration int, date, start, end time.Time) {
+// Add appends a new Task to the in Memory TaskList.
 func (t *TaskList) Add(nTask *Task) {
-
 	newTask := Task{
 		Name:       nTask.Name,
 		Duration:   nTask.Duration,
-		Date:       nTask.Date,
 		StartedAt:  nTask.StartedAt,
 		FinishedAt: nTask.FinishedAt,
 	}
@@ -38,28 +30,30 @@ func (t *TaskList) Add(nTask *Task) {
 	*t = append(*t, newTask)
 }
 
-func (t *TaskList) Save(filename string) error {
+// Save writes the whole TaskList in JSON to a file.
+func (t *TaskList) Save(w io.Writer) error {
 	d, err := json.MarshalIndent(t, "", " ")
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filename, d, 0644)
+
+	_, err = w.Write(d)
+	return err
 }
 
-func (t *TaskList) Load(filename string) error {
-	f, err := os.ReadFile(filename)
+// Load loads the whole TaskList into t (in Memory).
+func (t *TaskList) Load(r io.Reader) error {
+
+	buf, err := io.ReadAll(r)
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) { // check this err when func gets called like in main??
-			return nil
-		}
+		return err
+	}
+	// if file is empty (after create) - return here
+	if len(buf) == 0 {
 		return nil
 	}
 
-	if len(f) == 0 {
-		return err
-	}
-
-	err = json.Unmarshal(f, t)
+	err = json.Unmarshal(buf, t)
 	if err != nil {
 		return err
 	}
@@ -67,10 +61,72 @@ func (t *TaskList) Load(filename string) error {
 	return nil
 }
 
-func (t *TaskList) TotalRuns() int {
-	total := 0
-	for i := range *t { // todo: rewrite to use only 1var to do this
-		total = i
+// PrintStats pretty prints a table with Tasks done - possible to show just daily or whole month - default is daily
+func (t *TaskList) PrintStats(dayOrMonth string) {
+	var isMonth bool
+	if dayOrMonth == "m" {
+		isMonth = true
 	}
-	return total
+
+	table := simpletable.New()
+
+	table.Header = &simpletable.Header{
+		Cells: []*simpletable.Cell{
+			{Align: simpletable.AlignCenter, Text: "#"},
+			{Align: simpletable.AlignCenter, Text: "Task"},
+			{Align: simpletable.AlignCenter, Text: "Duration"},
+			{Align: simpletable.AlignCenter, Text: "Date"},
+			{Align: simpletable.AlignCenter, Text: "Start"},
+			{Align: simpletable.AlignCenter, Text: "End"},
+		},
+	}
+
+	dailyRuns, dailyTime, totalRuns, totalTime := 0, 0, 0, 0
+
+	for i, task := range *t {
+		i++
+
+		ta := []*simpletable.Cell{
+			{Text: fmt.Sprint(i)},
+			{Text: green(task.Name)},
+			{Align: simpletable.AlignCenter, Text: blue(fmt.Sprint(task.Duration))},
+			{Text: task.StartedAt.Format("02-01")},
+			{Text: task.StartedAt.Format("15:04")},
+			{Text: task.FinishedAt.Format("15:04")},
+		}
+
+		// add only task done at the same day to the cells // todo: change to switch and let user choose specific day
+		if !isMonth && time.Now().Day() == task.StartedAt.Day() {
+			dailyRuns++
+			dailyTime += task.Duration
+			table.Body.Cells = append(table.Body.Cells, ta)
+		} else if isMonth {
+			totalRuns++
+			totalTime += task.Duration
+			table.Body.Cells = append(table.Body.Cells, ta)
+		}
+	}
+
+	if !isMonth {
+		table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
+			{Align: simpletable.AlignLeft, Span: 2, Text: red(fmt.Sprintf("%d", dailyRuns))},
+			{Align: simpletable.AlignCenter, Text: red(fmt.Sprintf("%d", dailyTime))},
+			{Align: simpletable.AlignCenter, Text: red(time.Now().Weekday().String())},
+			{},
+			{},
+		}}
+
+	} else {
+		table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
+			{Align: simpletable.AlignLeft, Span: 2, Text: red(fmt.Sprintf("%d", totalRuns))},
+			{Align: simpletable.AlignCenter, Text: red(fmt.Sprintf("%d", totalTime))},
+			{Align: simpletable.AlignCenter, Text: red(time.Now().Month().String())},
+			{},
+			{},
+		}}
+	}
+
+	table.SetStyle(simpletable.StyleUnicode)
+
+	table.Println()
 }

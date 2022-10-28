@@ -17,7 +17,6 @@ func PlaySound() {
 	}
 
 	streamer, format, err := wav.Decode(f)
-
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -37,7 +37,6 @@ func (t *TaskList) Save(w io.Writer) error {
 	if err != nil {
 		return err
 	}
-
 	_, err = w.Write(d)
 	return err
 }

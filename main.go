@@ -14,7 +14,6 @@ import (
 var taskFile string = fmt.Sprintf(".%v.json", time.Now().Month())
 
 func main() {
-
 	duration := flag.Int("d", 25, "set the duration of one pomodoro round (in Minutes).")
 	taskName := flag.String("t", "not specified", "set the task you gonna do")
 	printStats := flag.String("print", "n", "Print Stats about pomodoro sessions. -d for daily -m for montly")

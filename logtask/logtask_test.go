@@ -18,16 +18,13 @@ func createMockTaskList() *TaskList {
 }
 
 func TestAdd(t *testing.T) {
-
 	mockTaskList := createMockTaskList()
-
 	newTask := Task{
 		Name:       "add a new Task",
 		Duration:   25,
 		StartedAt:  time.Time{},
 		FinishedAt: time.Time{},
 	}
-
 	mockTaskList.Add(&newTask)
 
 	// log.Println((*mockTaskList)[1])

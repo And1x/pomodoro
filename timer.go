@@ -12,7 +12,6 @@ import (
 )
 
 func runTimer(duration int) {
-
 	tik := time.NewTicker(1 * time.Millisecond) // todo change inProduction to seconds
 	i, j := 0, 0
 

@@ -12,10 +12,13 @@
 ``` 
 ./pomodoro -t 'Learning Bitcoin from the Command Line chapter - ch. 6.1'
 ```
+![progress bar](https://user-images.githubusercontent.com/92379947/198682630-fe65e2f7-c8a7-4434-a4f8-5b4b8851e13f.png)
+
 - Print daily runs:
 ```
 ./pomodoro -print d
 ```
+![print daily](https://user-images.githubusercontent.com/92379947/198682656-b2ae0833-d128-4f8c-a8e2-f0c69d3f3c5e.png)
 - To Pause press: ctrl + s 
 - To Resume press: ctrl + q
 

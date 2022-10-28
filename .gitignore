@@ -1,2 +1,3 @@
 # ignore contains unused code that may be useful in the future
 ignore/
+.taskList.json

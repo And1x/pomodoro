@@ -3,16 +3,17 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
-	"pomodoro/sound"
 	"strings"
 	"time"
+
+	"github.com/and1x/pomodoro/helper"
+	"github.com/and1x/pomodoro/sound"
 )
 
 func runTimer(duration int) {
 
-	tik := time.NewTicker(1 * time.Millisecond)
+	tik := time.NewTicker(1 * time.Millisecond) // todo change inProduction to seconds
 	i, j := 0, 0
 
 	for range tik.C {
@@ -31,17 +32,8 @@ func runTimer(duration int) {
 		}
 
 		// print Timer
-		fmt.Printf("\r%s%s[%s]", strings.Repeat("█", j), strings.Repeat(" ", 60-j), printElapsedTime(i)) // \r brings cursor to start of line
+		fmt.Printf("\r%s%s[%s]", strings.Repeat("█", j), strings.Repeat(" ", 60-j), helper.PrintTimePretty(i, "s")) // \r brings cursor to start of line
 	}
-}
-
-// printElapsedTime takes integer as seconds to convert it into a time.String in the Format "72h3m0.5s"
-func printElapsedTime(sec int) string {
-	d, err := time.ParseDuration(fmt.Sprintf("%ds", sec))
-	if err != nil {
-		log.Println(err)
-	}
-	return d.String()
 }
 
 // makeBreak prompts if break is wanted. Pomodoro breaks are 1/5 of time per Phase.

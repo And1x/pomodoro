@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"pomodoro/helpers"
 	"time"
+
+	"github.com/and1x/pomodoro/logtask"
 )
 
-const taskFile = ".taskList.json" // todo: add weekly name
+// every new month a new file to save pomodoro sessions gets created
+var taskFile string = fmt.Sprintf(".%v.json", time.Now().Month())
 
 func main() {
 
@@ -24,7 +26,7 @@ func main() {
 	}
 	defer f.Close()
 
-	taskList := &helpers.TaskList{}
+	taskList := &logtask.TaskList{}
 
 	if err := taskList.Load(f); err != nil {
 		fmt.Fprintln(os.Stderr)
@@ -45,7 +47,7 @@ func main() {
 		startTime := time.Now()
 		runTimer(*duration)
 
-		task := &helpers.Task{
+		task := &logtask.Task{
 			Name:       *taskName,
 			Duration:   *duration,
 			StartedAt:  startTime,

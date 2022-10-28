@@ -1,4 +1,4 @@
-module pomodoro
+module github.com/and1x/pomodoro
 
 go 1.17
 

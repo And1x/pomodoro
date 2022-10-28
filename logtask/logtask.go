@@ -1,4 +1,4 @@
-package helpers
+package logtask
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/alexeyco/simpletable"
+	"github.com/and1x/pomodoro/helper"
 )
 
 type Task struct {
@@ -100,26 +101,26 @@ func (t *TaskList) PrintStats(dayOrMonth string) {
 		}
 	}
 
+	dailyTimePretty := helper.PrintTimePretty(dailyTime, "m")
+	totalTimePretty := helper.PrintTimePretty(totalTime, "m")
+
 	if !isMonth {
 		table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
 			{Align: simpletable.AlignLeft, Span: 2, Text: red(fmt.Sprintf("%d", dailyRuns))},
-			{Align: simpletable.AlignCenter, Text: red(fmt.Sprintf("%d", dailyTime))},
+			{Align: simpletable.AlignCenter, Text: red(dailyTimePretty[:len(dailyTimePretty)-2])}, // slice 0s out of daily duration
 			{Align: simpletable.AlignCenter, Text: red(time.Now().Weekday().String())},
 			{},
 			{},
 		}}
-
 	} else {
 		table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
 			{Align: simpletable.AlignLeft, Span: 2, Text: red(fmt.Sprintf("%d", totalRuns))},
-			{Align: simpletable.AlignCenter, Text: red(fmt.Sprintf("%d", totalTime))},
+			{Align: simpletable.AlignCenter, Text: red(totalTimePretty[:len(totalTimePretty)-2])},
 			{Align: simpletable.AlignCenter, Text: red(time.Now().Month().String())},
 			{},
 			{},
 		}}
 	}
-
 	table.SetStyle(simpletable.StyleUnicode)
-
 	table.Println()
 }

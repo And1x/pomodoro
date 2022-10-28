@@ -12,14 +12,11 @@ import (
 
 func PlaySound() {
 	f, err := os.Open("./sound/bell.wav")
-	// f, err := os.Open("YOUR NEW MORNING ALARM.mp3")
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	streamer, format, err := wav.Decode(f)
-	//streamer, format, err := mp3.Decode(f)
 
 	if err != nil {
 		log.Fatal(err)

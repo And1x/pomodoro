@@ -1,4 +1,4 @@
-package helpers
+package logtask
 
 import (
 	"bytes"
@@ -14,11 +14,6 @@ func createMockTaskList() *TaskList {
 	mockTaskList := TaskList{
 		Task{Name: "testTask", Duration: int(duration.Minutes()), StartedAt: now, FinishedAt: now.Add(duration)},
 	}
-	// mockTaskList2 := &TaskList{}
-	// d, _ := json.Marshal(mockTaskList)
-	// json.Unmarshal(d, mockTaskList2)
-
-	// return mockTaskList2
 	return &mockTaskList
 }
 

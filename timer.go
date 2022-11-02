@@ -12,7 +12,7 @@ import (
 )
 
 func runTimer(duration int) {
-	tik := time.NewTicker(1 * time.Second) // todo change inProduction to seconds
+	tik := time.NewTicker(1 * time.Second)
 	i, j := 0, 0
 
 	for range tik.C {

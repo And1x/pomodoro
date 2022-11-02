@@ -1,8 +1,9 @@
 package sound
 
 import (
+	"bytes"
+	_ "embed"
 	"log"
-	"os"
 	"time"
 
 	"github.com/faiface/beep"
@@ -10,13 +11,11 @@ import (
 	"github.com/faiface/beep/wav"
 )
 
-func PlaySound() {
-	f, err := os.Open("./sound/bell.wav")
-	if err != nil {
-		log.Fatal(err)
-	}
+//go:embed bell.wav
+var b []byte
 
-	streamer, format, err := wav.Decode(f)
+func PlaySound() {
+	streamer, format, err := wav.Decode(bytes.NewReader(b))
 	if err != nil {
 		log.Fatal(err)
 	}

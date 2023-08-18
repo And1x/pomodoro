@@ -51,15 +51,18 @@ func (t *TaskList) Load(r io.Reader) error {
 	if len(buf) == 0 {
 		return nil
 	}
-	return json.Unmarshal(buf, t)
+
+	var temp TaskList
+	err = json.Unmarshal(buf, &temp)
+	if err != nil {
+		return err
+	}
+	*t = append(*t, temp...)
+	return nil
 }
 
-// PrintStats pretty prints a table with Tasks done - possible to show just daily or whole month - default is daily
-func (t *TaskList) PrintStats(dayOrMonth string) {
-	var isMonth bool
-	if dayOrMonth == "m" {
-		isMonth = true
-	}
+// PrintStats pretty prints a table with Tasks done - interval Options are "d","m", "all", "January","February"...
+func (t *TaskList) PrintStats(interval string) {
 
 	table := simpletable.New()
 
@@ -74,52 +77,55 @@ func (t *TaskList) PrintStats(dayOrMonth string) {
 		},
 	}
 
-	dailyRuns, dailyTime, totalRuns, totalTime := 0, 0, 0, 0
+	totalRuns, totalTime := 0, 0
 
 	for i, task := range *t {
 		i++
 
 		ta := []*simpletable.Cell{
 			{Text: fmt.Sprint(i)},
-			{Text: green(task.Name)},
+			{Text: green(task.GetShortString(58))},
 			{Align: simpletable.AlignCenter, Text: blue(fmt.Sprint(task.Duration))},
 			{Align: simpletable.AlignCenter, Text: task.StartedAt.Format("02-01")},
 			{Text: task.StartedAt.Format("15:04")},
 			{Text: task.FinishedAt.Format("15:04")},
 		}
 
-		// add only task done at the same day to the cells // todo: change to switch and let user choose specific day
-		if !isMonth && time.Now().Day() == task.StartedAt.Day() {
-			dailyRuns++
-			dailyTime += task.Duration
+		if interval == "d" && time.Now().Day() == task.StartedAt.Day() {
+			interval = time.Now().Weekday().String()
+			totalRuns++
+			totalTime += task.Duration
 			table.Body.Cells = append(table.Body.Cells, ta)
-		} else if isMonth {
+		} else {
+			if interval == "m" {
+				interval = time.Now().Month().String()
+			}
 			totalRuns++
 			totalTime += task.Duration
 			table.Body.Cells = append(table.Body.Cells, ta)
 		}
 	}
 
-	dailyTimePretty := helper.PrintTimePretty(dailyTime, "m")
 	totalTimePretty := helper.PrintTimePretty(totalTime, "m")
 
-	if !isMonth {
-		table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignLeft, Span: 2, Text: red(fmt.Sprintf("%d", dailyRuns))},
-			{Align: simpletable.AlignCenter, Text: red(dailyTimePretty[:len(dailyTimePretty)-2])}, // slice 0s out of daily duration
-			{Align: simpletable.AlignCenter, Text: red(time.Now().Weekday().String())},
-			{},
-			{},
-		}}
-	} else {
-		table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignLeft, Span: 2, Text: red(fmt.Sprintf("%d", totalRuns))},
-			{Align: simpletable.AlignCenter, Text: red(totalTimePretty[:len(totalTimePretty)-2])},
-			{Align: simpletable.AlignCenter, Text: red(time.Now().Month().String())},
-			{},
-			{},
-		}}
-	}
+	table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
+		{Align: simpletable.AlignLeft, Span: 2, Text: red(fmt.Sprintf("%d", totalRuns))},
+		{Align: simpletable.AlignCenter, Text: red(totalTimePretty[:len(totalTimePretty)-2])},
+		{Align: simpletable.AlignCenter, Text: red(interval)},
+		{},
+		{},
+	}}
+
 	table.SetStyle(simpletable.StyleUnicode)
 	table.Println()
+}
+
+// get the string shortend to max value -> limit length when it gets displayed in a table
+func (t Task) GetShortString(max int) string {
+	if len(t.Name) <= max {
+		return t.Name
+	} else {
+		return t.Name[:max-3] + "..."
+	}
+
 }

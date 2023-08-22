@@ -91,8 +91,6 @@ func (t *TaskList) PrintStats(interval string) {
 			{Text: task.FinishedAt.Format("15:04")},
 		}
 
-		fmt.Println(time.Now().Day() == task.StartedAt.Day())
-
 		if interval == "d" && time.Now().Day() == task.StartedAt.Day() {
 			interval = time.Now().Weekday().String()
 			totalRuns++
